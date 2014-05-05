@@ -2,7 +2,8 @@
 %% solutions for problems on projecteuler.net
 
 -module(projeuler).
--export([pow_dig_sum/2, is_prime/1, get_nth_prime/2, sum_primes_under_n/1, factorial_digit_sum/1, max_digit_product/3, read_file/1]).
+-export([pow_dig_sum/2, is_prime/1, get_nth_prime/2, sum_primes_under_n/1, factorial_digit_sum/1, max_digit_product/3, read_file/1, 
+         number_letter_count/1]).
 
 
 pow_dig_sum(Base, Pow) ->
@@ -63,8 +64,58 @@ sum_num_in_line(Fd, _Sum, {error, Reason}) ->
     file:close(Fd),
     {error, Reason}.
 
+%% functions for "number letter counts" problem
+number_count_under_twenty(N) -> 
+    case N of
+        0 -> 0;
+        1 -> length("one");
+        2 -> length("two");
+        3 -> length("Three");
+        4 -> length("Four");
+        5 -> length("Five");
+        6 -> length("Six");
+        7 -> length("Seven");
+        8 -> length("Eight");
+        9 -> length("Nine");
+        10 -> length("Ten");
+        11 -> length("eleven");
+        12 -> length("twelve");
+        13 -> length("thirteen");
+        14 -> length("fourteen");
+        15 -> length("fifteen");
+        16 -> length("sixteen");
+        17 -> length("seventeen");
+        18 -> length("eighteen");
+        19 -> length("nineteen")
+    end.
 
+tens_letter_count_over_twenty(N) ->
+    case N of
+        2 -> length("twenty");
+        3 -> length("thirty");
+        4 -> length("forty");
+        5 -> length("fifty");
+        6 -> length("sixty");
+        7 -> length("seventy");
+        8 -> length("eighty");
+        9 -> length("ninety")
+    end.
 
+hundred_letter_count(N) -> number_count_under_twenty(N) + length("hundred") + length("and").
+
+number_letter_count([]) -> 0;
+number_letter_count([X|Xs]) -> 
+    if X < 20 -> number_count_under_twenty(X) + number_letter_count(Xs)
+    ; X < 100 -> tens_letter_count_over_twenty(X div 10) + 
+                 number_count_under_twenty(X rem 10) +
+                 number_letter_count(Xs)
+    ; X == 1000 -> 11 + number_letter_count(Xs)
+    ; X rem 100 < 20 -> hundred_letter_count(X div 100) +
+                        number_count_under_twenty(X rem 100) +
+                        number_letter_count(Xs)
+    ; X rem 100 >= 20 -> hundred_letter_count(X div 100) +  tens_letter_count_over_twenty((X rem 100) div 10) +
+                         number_count_under_twenty(X rem 10) + number_letter_count(Xs)
+    end. 
 
 
 
