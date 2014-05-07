@@ -15,19 +15,20 @@
 
 
 pow_dig_sum(Base, Pow) ->
-    lists:foldl(fun(X, Sum) -> X - 48 + Sum end, 0, 
+    lists:foldl(fun(X, Sum) -> X - 48 + Sum end, 0,
                 integer_to_list(round(math:pow(Base, Pow)))).
-                
-all_factors(Num) when Num >= 4 -> [X || X <- lists:seq(2, round(math:sqrt(Num))), Num rem X == 0];
-all_factors(1) -> [1];
-all_factors(_) -> [].
+
+all_factors(Num) when Num > 1 ->
+    [X || X <- lists:seq(2, round(math:sqrt(Num))+1),
+     (Num rem X == 0) and (X /= Num)];
+all_factors(1) -> [1].
 
 is_prime(Num) ->
-    case all_factors(Num) of 
+    case all_factors(Num) of
         [] -> true;
         _ -> false
     end.
-        
+
 get_nth_prime(1, Start) ->
     case is_prime(Start) of
         true -> Start;
@@ -39,19 +40,19 @@ get_nth_prime(Nth, Start) ->
         false -> get_nth_prime(Nth, Start+1)
     end.
 
-sum_primes_under_n(N) -> 
+sum_primes_under_n(N) ->
     lists:foldl(fun(X, Sum) -> X + Sum end, 0, [X || X <- lists:seq(1, N), is_prime(X) == true]).
 
 factorial(N) -> lists:foldl(fun(X, Product) -> Product*X end, 1, [X || X <- lists:seq(1, N)]).
 
-factorial_digit_sum(N) -> 
+factorial_digit_sum(N) ->
     lists:foldl(fun(X, Sum) -> X - 48 + Sum end, 0, integer_to_list(factorial(N))).
 
-digit_products(Digits, NumOfSerials, Pos) -> 
+digit_products(Digits, NumOfSerials, Pos) ->
     case NumOfSerials == length(Digits) - Pos + 1 of
         true -> [lists:foldl(fun(X, P) -> X*P end, 1, [X - 48 || X <- lists:sublist(Digits, Pos, NumOfSerials)])];
-        false -> 
-          [lists:foldl(fun(X, P) -> X*P end, 1, [X - 48 || X <- lists:sublist(Digits, Pos, NumOfSerials)])] ++ 
+        false ->
+          [lists:foldl(fun(X, P) -> X*P end, 1, [X - 48 || X <- lists:sublist(Digits, Pos, NumOfSerials)])] ++
           digit_products(Digits, NumOfSerials, Pos+1)
     end.
 
@@ -73,7 +74,7 @@ sum_num_in_line(Fd, _Sum, {error, Reason}) ->
     {error, Reason}.
 
 %% functions for "number letter counts" problem
-number_count_under_twenty(N) -> 
+number_count_under_twenty(N) ->
     case N of
         0 -> 0;
         1 -> length("one");
@@ -112,9 +113,9 @@ tens_letter_count_over_twenty(N) ->
 hundred_letter_count(N) -> number_count_under_twenty(N) + length("hundred") + length("and").
 
 number_letter_count([]) -> 0;
-number_letter_count([X|Xs]) -> 
+number_letter_count([X|Xs]) ->
     if X < 20 -> number_count_under_twenty(X) + number_letter_count(Xs)
-    ; X < 100 -> tens_letter_count_over_twenty(X div 10) + 
+    ; X < 100 -> tens_letter_count_over_twenty(X div 10) +
                  number_count_under_twenty(X rem 10) +
                  number_letter_count(Xs)
     ; X == 1000 -> 11 + number_letter_count(Xs)
@@ -123,11 +124,11 @@ number_letter_count([X|Xs]) ->
                         number_letter_count(Xs)
     ; X rem 100 >= 20 -> hundred_letter_count(X div 100) +  tens_letter_count_over_twenty((X rem 100) div 10) +
                          number_count_under_twenty(X rem 10) + number_letter_count(Xs)
-    end. 
+    end.
 
-%% functions for handling problem 12 
+%% functions for handling problem 12
 triangle_num(0) -> 0;
-triangle_num(N) -> lists:foldl(fun (X, Sum) -> X + Sum end, 
+triangle_num(N) -> lists:foldl(fun (X, Sum) -> X + Sum end,
                                0,
                                lists:seq(1, N)).
 
@@ -142,6 +143,3 @@ trinum_over_N_factors(Start, N) ->
     if NumOfFactor > N -> triangle_num_alt(Start);
        true -> trinum_over_N_factors(Start+1, N)
     end.
-
-
-
