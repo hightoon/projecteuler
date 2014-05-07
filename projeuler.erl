@@ -136,10 +136,11 @@ triangle_num(N) -> lists:foldl(fun (X, Sum) -> X + Sum end,
 %% 1 + 2 + ... + N == N*(N+1)/2
 triangle_num_alt(N) -> (N * (N+1)) bsr 1.
 
+%% very inefficient
 factors(N) -> [X || X <- lists:seq(1, (N+1) div 2), N rem X == 0] ++ [N].
 
 trinum_over_N_factors(Start, N) ->
-    NumOfFactor = length(factors(triangle_num_alt(Start))),
+    NumOfFactor = length(all_factors(triangle_num_alt(Start))) * 2 + 2,
     if NumOfFactor > N -> triangle_num_alt(Start);
        true -> trinum_over_N_factors(Start+1, N)
     end.
