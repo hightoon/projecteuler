@@ -2,8 +2,16 @@
 %% solutions for problems on projecteuler.net
 
 -module(projeuler).
--export([pow_dig_sum/2, is_prime/1, get_nth_prime/2, sum_primes_under_n/1, factorial_digit_sum/1, max_digit_product/3, read_file/1, 
-         number_letter_count/1]).
+-export([ pow_dig_sum/2
+        , is_prime/1
+        , get_nth_prime/2
+        , sum_primes_under_n/1
+        , factorial_digit_sum/1
+        , max_digit_product/3
+        , read_file/1
+        , number_letter_count/1
+        , trinum_over_N_factors/2
+        ]).
 
 
 pow_dig_sum(Base, Pow) ->
@@ -116,6 +124,24 @@ number_letter_count([X|Xs]) ->
     ; X rem 100 >= 20 -> hundred_letter_count(X div 100) +  tens_letter_count_over_twenty((X rem 100) div 10) +
                          number_count_under_twenty(X rem 10) + number_letter_count(Xs)
     end. 
+
+%% functions for handling problem 12 
+triangle_num(0) -> 0;
+triangle_num(N) -> lists:foldl(fun (X, Sum) -> X + Sum end, 
+                               0,
+                               lists:seq(1, N)).
+
+%% another way to get triangle number
+%% 1 + 2 + ... + N == N*(N+1)/2
+triangle_num_alt(N) -> (N * (N+1)) bsr 1.
+
+factors(N) -> [X || X <- lists:seq(1, (N+1) div 2), N rem X == 0] ++ [N].
+
+trinum_over_N_factors(Start, N) ->
+    NumOfFactor = length(factors(triangle_num_alt(Start))),
+    if NumOfFactor > N -> triangle_num_alt(Start);
+       true -> trinum_over_N_factors(Start+1, N)
+    end.
 
 
 
