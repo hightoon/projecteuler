@@ -18,11 +18,11 @@ pow_dig_sum(Base, Pow) ->
     lists:foldl(fun(X, Sum) -> X - 48 + Sum end, 0,
                 integer_to_list(round(math:pow(Base, Pow)))).
 
-all_factors(Num) when Num > 1 ->
-    [X || X <- lists:seq(2, round(math:sqrt(Num))+1),
-     (Num rem X == 0) and (X /= Num)];
-all_factors(1) -> [1].
+all_factors(Num) when Num > 0 ->
+    [X || X <- lists:seq(1, trunc(math:sqrt(Num))),
+     (Num rem X == 0) and (X /= Num) and (X /= 1)].
 
+is_prime(1) -> true;
 is_prime(Num) ->
     case all_factors(Num) of
         [] -> true;
