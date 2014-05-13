@@ -2,6 +2,7 @@
 %% solutions for problems on projecteuler.net
 
 -module(projeuler).
+-compile(export_all).
 -export([ pow_dig_sum/2
         , is_prime/1
         , get_nth_prime/2
@@ -144,3 +145,6 @@ trinum_over_N_factors(Start, N) ->
     if NumOfFactor > N -> triangle_num_alt(Start);
        true -> trinum_over_N_factors(Start+1, N)
     end.
+
+alpha_value([]) -> 0;
+alpha_value([X|Xs]) -> X - $A + 1 + alpha_value(Xs).
