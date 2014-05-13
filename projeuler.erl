@@ -148,3 +148,21 @@ trinum_over_N_factors(Start, N) ->
 
 alpha_value([]) -> 0;
 alpha_value([X|Xs]) -> X - $A + 1 + alpha_value(Xs).
+
+read_all_file(FileName) ->
+    case file:open(FileName, [read]) of
+      {ok, Fd} -> handle_file_content(Fd, file:read_line(Fd));
+      {error, Reason} -> {error, Reason}
+    end.
+
+handle_file_content(_Fd, {ok, Data}) ->
+    alpha_sum(
+      lists:sort(
+        [string:strip(T, both, $") || T <- string:tokens(Data, ",")]
+      ), 1
+    );
+handle_file_content(Fd, {error, Reason}) -> file:close(Fd), {error, Reason};
+handle_file_content(Fd, eof) -> file:close(Fd).
+
+alpha_sum([], _) -> 0;
+alpha_sum([X|Xs], N) -> alpha_value(X)*N + alpha_sum(Xs, N+1).
